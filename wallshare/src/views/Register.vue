@@ -1,5 +1,5 @@
 <template>
-    <backdrop :show='!close' :image="bg" @close="closeModal">
+    <backdrop :show='!close' @close="closeModal">
       <form-div :clip="true" clip_class="bg-blue-500" @submit='onSubmit' >
         <form-header title="Register" />
         <text-form-group name='name' class="z-20" label="Name" placeholder="Joe Nick" :validate='v_Name' v-model='name' required />
@@ -25,14 +25,11 @@ import FormDiv from '@/components/form-div.vue'
 
 import axios from 'axios'
 
-import backgroundImage from '../../static/images/img-2.jpg'
-
 export default {
   components: { backdrop, TextFormGroup, CheckFormGroup, ButtonFormGroup, FormDiv, EmptyForm, FormHeader},
   data(){
     return {
       close: false,
-      bg: backgroundImage,
       //Form Data
       name: '',
       usrname: '',
