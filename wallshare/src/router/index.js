@@ -1,10 +1,12 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import Home from '../views/Home.vue'
-import SignIn from '../views/SignIn.vue'
-import Register from '../views/Register.vue'
-import AddPhoto from '../views/AddPhoto.vue'
-import EditUser from '../views/EditUser.vue'
-import User from '../views/User.vue'
+
+const Home = () => {'../views/Home.vue'}
+const SignIn = () => {'../views/SignIn.vue'}
+const Register = () => {'../views/Register.vue'}
+const AddPhoto = () => {'../views/AddPhoto.vue'}
+const EditUser = () => {'../views/EditUser.vue'}
+const User = () => { '../views/User.vue'}
+
 const routes = [
   {
     path: '/',
