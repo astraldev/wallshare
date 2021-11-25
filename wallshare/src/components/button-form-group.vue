@@ -1,6 +1,6 @@
 <template>
   <div :class="`button-form-group-multiple ${spread ? 'spread' : '' }`" v-if="!!labels">
-    <button v-for="(lab, index) in labels" :type="lab.type ? lab.type : 'button'" :style="`border-color: ${lab.border}; background: ${lab.bg}`" :key="index" @click="lab.callback">
+    <button v-for="(lab, index) in labels" :type="lab.type ? lab.type : 'button'" :class="lab.class" :style="`border-color: ${lab.border}; background: ${lab.bg}`" :key="index" @click="lab.callback">
       {{lab.label}}
     </button>
   </div>

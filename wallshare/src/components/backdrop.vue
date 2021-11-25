@@ -1,5 +1,5 @@
 <template>
-  <div class="backdrop-filter fixed bg-gray-500/[0.9] backdrop-blur-md z-[100] inset-0" :style="`background-image: ${image}`" v-if="show">
+  <div class="backdrop-filter fixed bg-gray-500/[0.9] border-0 backdrop-blur-md z-[100] inset-0" :style="`background-image: ${image}`" v-if="show">
     <button class="h-7 w-7 p-0.5 absolute z-20 top-2 right-2 text-gray-200 hover:text-white" @click="$emit('close')">
       <svg version="1.1" viewBox="0 0 16 16" class="fill-current" xmlns="http://www.w3.org/2000/svg">
         <g fill-rule="evenodd" stroke-width="1.1">

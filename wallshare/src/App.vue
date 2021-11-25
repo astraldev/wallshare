@@ -1,6 +1,6 @@
 <template>
-  <transition name='fade'>
-    <div v-if='animation || !dataGotten' class="backdrop-filter w-full fixed flex top-0 bottom-0 h-full bg-gray-100 backdrop-blur-md">
+    <div v-if='animation || !dataGotten' class="backdrop-filter w-full fixed flex flex-col text-center top-0 bottom-0 h-full bg-gray-100 backdrop-blur-md">
+      
       <svg version="1.1" viewBox="0 0 64 64" :class='`h-64 w-64 m-auto transition ${animation ? "animation-1" : "animation-2"}`' xmlns="http://www.w3.org/2000/svg">
         <path ref="svg" d="m20.348 57.94c6.3889-4.5764 18.336-7.092 25.902-11.98 7.5654-4.8876 13.849-9.7084 14.424-20.25-.46037-11.015-9.0395-14.095-15.49-13.843-11.234.004245-21.524 18.685-18.817 21.964 31.921-20.064 21.871 5.2966-6.0186 24.108zm23.304-51.881c-6.3889 4.5764-18.336 7.092-25.902 11.98-7.5654 4.8876-13.849 9.7084-14.424 20.25.46037 11.015 9.0395 14.095 15.49 13.843 11.234-.004245 21.524-18.685 18.817-21.964-31.921 20.064-21.871-5.2966 6.0186-24.108z" />
       </svg>
@@ -17,9 +17,11 @@
           <button class="bg-green-400/90 hover:bg-green-400 rounded-md text-white w-1/2 p-1" @click='acceptCookie'>Got it</button>
         </div>
       </message-box>
+      <message-box :show="popAlert">
+        <span :class="`${alertType === 'error' ? 'text-red-500' : (alertType === 'info' ? 'text-blue-500' : 'text-green-500')} text-base`">{{alertMessage}}</span>
+      </message-box>
      <!--  <message :type='' /> -->
     </div>
-  </transition>
 </template>
 <script>
 import '../public/style.css'
@@ -27,8 +29,6 @@ import navbar from './components/navbar.vue'
 import messageBox from './components/message-box.vue'
 
 import axios from 'axios'
-
-var ip = require('address').ip
 
 export default {
   components: { navbar, messageBox },
@@ -40,46 +40,47 @@ export default {
       saveCookie: false,
       serverHost: 'localhost',
       animation: true, 
-      dataGotten: false
+      dataGotten: false,
+      alertType: '',
+      alertMessage: '',
+      popAlert: false,
+      error: ''
     }
   },
   mounted(){
+    this.error = this.$cookies.get() 
+    let id = this.$cookies.get('id')
     let checkIfCookiesAviliable = ()=>{
       if(this.$cookies.get("allows")){
-        if(this.$cookies.get("id")){
-          let id = this.$cookies.get('id')
-          console.log(id)
           if(id){
+
+            //this.error = "hey" + id
             id = id.split("").reverse().join("")
             this.getUser(id)
           }else{
-            this.$cookies.remove("id")
             this.dataGotten = true
           }
-        }else{
-          this.dataGotten = true
-        }
       }else{
-        setTimeout(() => {this.showCookieToast = true}, 1500)
+        setTimeout(() => {this.showCookieToast = true; this.dataGotten = true}, 1500)
       }
     }
+    //this.error = id || "Hey damn :("
+    this.serverHost = 'https://wallshare-server.herokuapp.com'
     checkIfCookiesAviliable()
-    this.serverHost = ip() ? ip() : 'localhost'  
-
-    setInterval(this.refreshContent, 5000)
+    this.refreshContent()
+    setInterval(this.refreshContent, 1000)
     setTimeout(()=>{this.animation = false}, 2000)
   },
   methods :{
     refreshContent(){
-      console.log(this.userData.userID, 0)
       if(this.userData.userID){
         this.getUser(this.userData.userID)
       }
-      this.serverHost = ip() ? ip() : 'localhost' 
+      /* prod:  */
     },
     getUser(id){
       axios
-        .get(`http://${this.serverHost}:3030/api/users/byID?id=${id}`)
+        .get(`${this.serverHost}/api/users/byID?id=${id}`)
         .then(this.userGotten)
         .catch(this.logInFailed)
     },
@@ -92,22 +93,30 @@ export default {
       this.showCookieToast = false
       this.saveCookie = false
     },
-    logInFailed(){
-      console.log("Failed to sign in ")
+    logInFailed(data){
+      this.dataGotten = true
+      this.error = data
     },
     userGotten(data){
       if(!(data.data && data.data.userID)){
+        this.logOut()
+        this.$cookies.remove("allows")
         return
       }
       this.userData = data.data
       this.signedIn = true
-      setTimeout(()=>{this.dataGotten = true}, 3000)
+      setTimeout(()=>{this.dataGotten = true}, 2000)
     },
     logOut(){
       this.$cookies.remove("id")
       this.userData = {}
       this.signedIn = false
-
+    },
+    showAlert(msg, type=false){
+      this.alertMessage = msg
+      this.alertType = type
+      this.popAlert = true
+      setTimeout(()=>{this.popAlert = false}, 5500)
     }
   }
 }
@@ -146,7 +155,7 @@ export default {
   95%{stroke-dashoffset: 0;}
   100%{fill: #666; stroke-width: 0px;}
 }@keyframes scaleXY{
-  to{transform: scale(1.1);}
+  to{transform: scale(1.05);}
 }
 </style>
 

@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full mb-1 animate-user-photo-card relative object-contain border border-gray-100 hover:border-gray-200 shadow-md rounded overflow-hidden">
+    <div class="w-full mb-1 animate-user-photo-card opacity-0 relative object-contain border border-gray-100 hover:border-gray-200 shadow-md rounded overflow-hidden">
         <button @click="$emit('delete', photo)" class="backdrop-filter bg-gray-100/30 backdrop-blur-sm w-6 h-6 p-0.5 hover:text-gray-100 top-1 right-1 absolute text-gray-300">
             <svg version="1.1" viewBox="0 0 16 16" class="fill-current" xmlns="http://www.w3.org/2000/svg">
               <g fill-rule="evenodd" stroke-width="1.1">
@@ -29,20 +29,24 @@
 <script>
     export default{
         props: ['photo'],
-        emits: ['delete', 'edit']
+        emits: ['delete', 'edit'],
+        data(){return { observer: null } },
+        mounted(){
+            this.observer = new IntersectionObserver((entries) =>{
+              entries.forEach((el)=>{
+                this.fadeInAnimation(el.target, el.isIntersecting)
+              })
+            });
+            this.observer.observe(this.$el);
+        },
+        methods:{
+            fadeInAnimation(el, isIntersecting){
+                if(isIntersecting){
+                    el.classList.add('fade-in')
+                }else{
+                    el.classList.remove('fade-in')
+                }
+            }
+        }
     }
 </script>
-<style>
-    .animate-user-photo-card{
-        margin: auto initial;
-        animation: anim 500ms 0s forwards ease-in;
-    }
-    @keyframes anim{
-        from{
-            opacity: 0;
-        }
-        to{
-            opacity: 1;
-        }
-    }
-</style>

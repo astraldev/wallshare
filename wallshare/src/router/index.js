@@ -1,11 +1,12 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 
-const Home = () => {'../views/Home.vue'}
-const SignIn = () => {'../views/SignIn.vue'}
-const Register = () => {'../views/Register.vue'}
-const AddPhoto = () => {'../views/AddPhoto.vue'}
-const EditUser = () => {'../views/EditUser.vue'}
-const User = () => { '../views/User.vue'}
+const Home     = () => { return import('../views/Home.vue')     },
+      SignIn   = () => { return import('../views/SignIn.vue')   },
+      Register = () => { return import('../views/Register.vue') },
+      AddPhoto = () => { return import('../views/AddPhoto.vue') },
+      EditUser = () => { return import('../views/EditUser.vue') },
+      User     = () => { return import('../views/User.vue')     },
+      ViewUser = () => { return import('../views/ViewUser.vue') }
 
 const routes = [
   {
@@ -39,6 +40,12 @@ const routes = [
         component: EditUser
       }
     ]
+  },
+  {
+    path: '/view/:uname',
+    name: 'view-user',
+    props: true,
+    component: ViewUser
   }
 ]
 

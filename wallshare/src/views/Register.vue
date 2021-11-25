@@ -43,7 +43,11 @@ export default {
   },
   methods:{
     validateAll(){
-      if(this.v_Name(this.name).sucess && this.v_Username(this.usrname).sucess && (this.email.length > 4) && this.password.length > 5){
+      if(this.v_Name(this.name).sucess && 
+        this.v_Username(this.usrname).sucess && 
+        this.v_Email(this.email).sucess && 
+        (this.password.length > 5)
+      ){
         return true
       }else{
         return false
@@ -56,8 +60,10 @@ export default {
       this.$root.userData = data.data
       this.$root.signedIn = true
       this.$router.push("/")
-      if(this.$cookies.get("allows"))
+      if(this.$cookies.get("allows")){
         this.$cookies.set('id', data.data.userID.split("").reverse().join(""), {expires: '1d'}) 
+      console.log("Saved data")
+      }
     },
     onSubmit(){
       if(this.validateAll()){
@@ -69,16 +75,17 @@ export default {
           password: this.password
         }
          axios
-          .get(`http://${this.$root.serverHost}:3030/api/users/find?userName=${data.userName}&email=${data.email}`)
+          .get(`${this.$root.serverHost}/api/users/find?userName=${data.userName}&email=${data.email}`)
           .then((res)=>{
             if(!res.data.sucess){
               this.userExists = false
               this.emailExists = false
               axios
-                .post(`http://${this.$root.serverHost}:3030/api/users/new`, data)
+                .post(`${this.$root.serverHost}/api/users/new`, data)
                 .then(()=>{
-                  axios.get(`http://${this.$root.serverHost}:3030/api/users/signin?userName=${data.userName}&password=${data.password}`)
+                  axios.get(`${this.$root.serverHost}/api/users/signin?userName=${data.userName}&password=${data.password}`)
                     .then(this.logIn)
+                    .catch((e)=>{console.log(e)})
                   })
                 .catch(()=>{
                   console.log("Error")
@@ -156,6 +163,19 @@ export default {
         res.info = 'Input your two names'
       }
       return res
+    },
+    v_Email(val){
+      let res = {
+        sucess: true,
+        info: ''
+      }
+      if(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(val)){
+        res.sucess = true
+      }else if(!val){
+        res.info = ''
+      }else{
+        res.info = 'Input a valid email'
+      }
     }
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="text-form-group">
     <span>{{label}}</span>
-    <input :type="toggleView ? 'text' : type" :name='name' :placeholder="placeholder" :class="error != '' && error ? errorClass : mainClass" :value="modelValue ? modelValue : val" @input="onInput" required="!!required" />
+    <input :type="toggleView ? 'text' : type" :name='name' :placeholder="placeholder" :class="error != '' && error ? errorClass : mainClass" :value="modelValue ? modelValue : val" @input="onInput" required="!!required" :disabled='!!disabled'/>
     <button :class="`absolute h-7 w-6 right-3 ${error || errMessage ? 'bottom-6' : 'bottom-2.5'}`" v-if="type == 'password'" type='button' @click="toggleView = !toggleView">
       <!-- Open Eyes -->
       <svg version="1.1" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" v-if='toggleView'>
@@ -19,7 +19,7 @@
 <script>
  //@input="$emit('input', $event.target.value)" 
 export default {
-  props: ['label', 'name', 'type', 'placeholder', 'modelValue', 'error', 'validate', 'required'],
+  props: ['label', 'name', 'type', 'placeholder', 'modelValue', 'error', 'validate', 'required', 'disabled'],
   data(){
     return {
       okayClass:  'border-blue-300 focus:bg-blue-50 focus:border-blue-400',
@@ -55,7 +55,11 @@ export default {
         } 
         else {
           this.mainClass = this.errorClass
-          this.errMessage = res.info || ''
+          this.errMessage = res.info || res.message ||''
+        }
+        if(value === ''){
+          this.mainClass = this.okayClass
+          this.errMessage = ''
         }
       }
     }

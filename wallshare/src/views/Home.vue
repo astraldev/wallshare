@@ -19,6 +19,7 @@ export default {
       showCookieToast: false,
       saveCookie: false,
       file: '',
+      error: '',
       photos: []
     }
   },
@@ -28,15 +29,20 @@ export default {
   },
   methods:{
     refreshContent(){
+      console.log(`${this.$root.serverHost}/api/photos/`)
       axios
-        .get(`http://${this.$root.serverHost}:3030/api/photos/`)
+        .get(`${this.$root.serverHost}/api/photos/`)
         .then((data)=>{
           let out = []
           data.data.forEach((item)=>{
-            item.link = `http://${this.$root.serverHost}:3030/images/${item.location}`
+            item.link = `${this.$root.serverHost}/images/${item.location}`
             out.push(item)
           })
           if(out != this.photos) this.photos = out
+        })
+        .catch((data)=>{
+          console.log("Another error", data)
+          this.error = data
         })
     },
     getUserLink(){

@@ -1,12 +1,12 @@
 <template>
   <!-- This is a message template -->
   <div :class="`fixed w-full flex flex-col-reverse bottom-0 ${show ? 'slide-up' : hide_animation }`">
-  <div class="items-center w-[fit-content] mx-auto flex mb-3 rounded-lg border-2 border-gray-300 bg-white shadow-lg px-2 py-1.5">
+  <div class="items-center w-[fit-content] mx-auto flex mb-0 rounded border bg-white shadow-lg px-2 py-1.5">
     <div class='flex flex-col mx-auto'>
       <span>{{title}}</span>
       <slot class="p-2"></slot>
     </div>
-    <button class="h-7 w-7 p-0.5 ml-auto" @click="atClick" v-if='!customButton'>
+    <button class="h-5 w-5 p-0.5 ml-auto" @click="atClick" v-if='!customButton'>
       <svg version="1.1" viewBox="0 0 16 16" class="fill-current" xmlns="http://www.w3.org/2000/svg">
         <g fill-rule="evenodd" stroke-width="1.1">
           <path transform="rotate(135)" d="m-6.6128-12.428h13.226c.6173 0 1.1143.49696 1.1143 1.1143s-.49696 1.1143-1.1143 1.1143h-13.226c-.6173 0-1.1143-.49696-1.1143-1.1143s.49696-1.1143 1.1143-1.1143z"/>
@@ -46,7 +46,7 @@
     }
   }
 </script>
-<style>
+<style scoped>
 .slide-up{
   animation: slide-up 450ms 0s forwards;
 }

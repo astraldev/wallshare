@@ -1,12 +1,12 @@
 <template>
   <backdrop :show="showModal" @close="closeModal">
     <form-div :clip="true" @submit='onSubmit' @reset='onReset'>
-      <form-header title="Add Photos" />
+      <form-header title="Add Photo" />
       <text-form-group label="Title" v-model='im_title' @change="onChange" placeholder="e.g Wildlife show" :error="onError" required/>
       <tag-input ref='tag_input' placeholder="Input tags seperated by comma or space" label="Tags" :max='10'  v-model='im_tags'/>
       <select-form-group label="Select licence" :options="['CCA']" v-model='im_license'/>
       <file-form-group label="File to upload" accepts="image/jpg,image/jpeg,image/png,image/svg" v-model='im_file' :multiple="false"/>
-      <button-form-group :labels="[{label: 'Reset', type: 'reset', callback: onReset}, {label: 'Upload files', type: 'submit'}]"/>
+      <button-form-group :labels="buttons" />
     </form-div>
   </backdrop>
 </template>
@@ -32,7 +32,18 @@ export default {
             im_tags: [],
             im_license: '',
             im_file: '',
-            onError: ""
+            onError: "",
+            buttons:[
+              {
+                label: 'Reset', 
+                type: 'reset', 
+                callback: this.onReset
+              },
+              {
+                label: 'Upload file', 
+                type: 'submit'
+              }
+            ]
         }
     }, 
     methods:{
@@ -49,7 +60,7 @@ export default {
             axios({
                 headers: {'Content-Type': 'multipart/form-data'},
                 method: "post",
-                url: `http://${this.$root.serverHost}:3030/api/users/photo`,
+                url: `${this.$root.serverHost}/api/users/photo`,
                 data: formData
             })
              .then((res)=>{

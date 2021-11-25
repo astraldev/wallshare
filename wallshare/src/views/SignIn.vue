@@ -32,7 +32,7 @@
     methods: {
       closeModal(){
         this.showModal = false
-        this.$router.push('/')
+        this.$router.back()
         this.showModal = true
       },
       validateAll(){
@@ -49,13 +49,15 @@
         }
 
         this.$root.userData = data.data
-        if(this.$cookies.get("allows"))
+        if(this.$cookies.get("allows")){
           this.$cookies.set('id', data.data.userID.split("").reverse().join(""), {expires: '1d'}) 
+          
+        }
         this.$root.signedIn = true
-        this.$router.push("/")
       },
       submitFailed(){
         console.log('failed')
+        this.un_error = "Request failed"
       },
       onSubmit(){
         let data = {
@@ -63,7 +65,7 @@
           password: this.password
         }
         if(this.validateAll()){
-          axios.get(`http://${this.$root.serverHost}:3030/api/users/signin?userName=${data.username}&password=${data.password}`)
+          axios.get(`${this.$root.serverHost}/api/users/signin?userName=${data.username}&password=${data.password}`)
             .then(this.submitSucess)
             .catch(this.submitFailed)
         }
