@@ -78,7 +78,7 @@ export default {
          axios
           .get(`${this.$root.serverHost}/api/users/find?userName=${data.userName}&email=${data.email}`)
           .then((res)=>{
-            this.error = res.data || 'Error occured'
+            this.error = `${res}`
             if(!res.data.sucess){
               this.userExists = false
               this.emailExists = false
