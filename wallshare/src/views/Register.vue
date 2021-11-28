@@ -11,7 +11,6 @@
           <span>Already a member <router-link to="/sign-in">Sign in</router-link> </span>
         </empty-form>
         <button-form-group :labels="[{label: 'Close', callback: closeModal }, {label: 'Register', type: 'submit'}]"/>
-        {{error ? `Error is ${error}` : 'Passed' }}
       </form-div>
     </backdrop>
 </template>
@@ -40,7 +39,6 @@ export default {
       //Already exists
       userExists: false,
       emailExists: false,
-      error: true,
     }
   },
   methods:{
@@ -79,7 +77,6 @@ export default {
          axios
           .get(`${this.$root.serverHost}/api/users/find?userName=${data.userName}&email=${data.email}`)
           .then((res)=>{
-            this.error = `${res}`
             if(!res.data.sucess){
               this.userExists = false
               this.emailExists = false
