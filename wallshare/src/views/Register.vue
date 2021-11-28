@@ -78,6 +78,8 @@ export default {
           .get(`${this.$root.serverHost}/api/users/find?userName=${data.userName}&email=${data.email}`)
           .then((res)=>{
             console.log(res)
+            console.log(' Huh, what is going on' )
+            console.log(res.data, res); console.log('Damn')
             if(!res.data.sucess){
               this.userExists = false
               this.emailExists = false
