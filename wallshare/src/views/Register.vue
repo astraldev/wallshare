@@ -8,7 +8,7 @@
         <text-form-group name='password' class="z-20" label="Password" type="password" placeholder="Password" :validate='v_Pass' v-model='password' required/>
         <check-form-group name='check' class="z-20" label="I agree to all" link_label="terms and conditions" v-model='agreeToTerms' link_to="/" :router="true"  type="checkbox" />
         <empty-form>
-          <span>Already a member <router-link to="/sign-in">Sign in</router-link> {{error}}</span>
+          <span>Already a member <router-link to="/sign-in">Sign in</router-link> {{error?`Error is ${error}`:'Passed'}}</span>
         </empty-form>
         <button-form-group :labels="[{label: 'Close', callback: closeModal }, {label: 'Register', type: 'submit'}]"/>
       </form-div>
