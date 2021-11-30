@@ -47,7 +47,7 @@ export default {
   },
   mounted(){
     let id = this.$cookies.get('id')
-    this.serverHost = "http://localhost:5000"//"http://192.168.43.167:5000" //
+    this.serverHost = "https://wallshare-server.heroku.app" //
     this.checkIfCookiesAviliable(id)
     this.refreshContent()
     setTimeout(()=>{this.animation = false}, 1000)
