@@ -15,8 +15,7 @@
     }
 </script>
 <style scoped>
-/*
-._photo-container{
+/* ._photo-container{
     line-height: 0;
     column-count: 0;
     column-gap: 0;
@@ -28,12 +27,12 @@
 }
 @media (min-width: 1000px){
     ._photo-container{
-        column-count: 2;
+        column-count: 3;
     }
-}*/
+}/* */
 ._photo-container{
     display: grid;
     grid-gap: 5px;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr))
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
 }
 </style>

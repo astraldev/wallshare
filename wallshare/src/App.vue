@@ -1,6 +1,5 @@
 <template>
     <div v-if='animation || !dataGotten' class="backdrop-filter w-full fixed flex flex-col text-center top-0 bottom-0 h-full bg-gray-100 backdrop-blur-md">
-      
       <svg version="1.1" viewBox="0 0 64 64" :class='`h-64 w-64 m-auto transition ${animation ? "animation-1" : "animation-2"}`' xmlns="http://www.w3.org/2000/svg">
         <path ref="svg" d="m20.348 57.94c6.3889-4.5764 18.336-7.092 25.902-11.98 7.5654-4.8876 13.849-9.7084 14.424-20.25-.46037-11.015-9.0395-14.095-15.49-13.843-11.234.004245-21.524 18.685-18.817 21.964 31.921-20.064 21.871 5.2966-6.0186 24.108zm23.304-51.881c-6.3889 4.5764-18.336 7.092-25.902 11.98-7.5654 4.8876-13.849 9.7084-14.424 20.25.46037 11.015 9.0395 14.095 15.49 13.843 11.234-.004245 21.524-18.685 18.817-21.964-31.921 20.064-21.871-5.2966 6.0186-24.108z" />
       </svg>
@@ -18,9 +17,8 @@
         </div>
       </message-box>
       <message-box :show="popAlert">
-        <span :class="`${alertType === 'error' ? 'text-red-500' : (alertType === 'info' ? 'text-blue-500' : 'text-green-500')} text-base`">{{alertMessage}}</span>
+        <span :class="`${alertType === 'error' ? 'text-red-600 bg-red-400 p-2' : (alertType === 'info' ? 'text-blue-500' : 'text-green-500')} text-base`">{{alertMessage}}</span>
       </message-box>
-     <!--  <message :type='' /> -->
     </div>
 </template>
 <script>
@@ -48,13 +46,16 @@ export default {
     }
   },
   mounted(){
-    this.error = this.$cookies.get() 
     let id = this.$cookies.get('id')
-    let checkIfCookiesAviliable = ()=>{
+    this.serverHost = "http://localhost:5000"//"http://192.168.43.167:5000" //
+    this.checkIfCookiesAviliable(id)
+    this.refreshContent()
+    setTimeout(()=>{this.animation = false}, 1000)
+  },
+  methods :{
+    checkIfCookiesAviliable(id){
       if(this.$cookies.get("allows")){
           if(id){
-
-            //this.error = "hey" + id
             id = id.split("").reverse().join("")
             this.getUser(id)
           }else{
@@ -63,20 +64,11 @@ export default {
       }else{
         setTimeout(() => {this.showCookieToast = true; this.dataGotten = true}, 1500)
       }
-    }
-    //this.error = id || "Hey damn :("
-    this.serverHost = 'https://wallshare-server.herokuapp.com'
-    checkIfCookiesAviliable()
-    this.refreshContent()
-    setInterval(this.refreshContent, 1000)
-    setTimeout(()=>{this.animation = false}, 2000)
-  },
-  methods :{
+    },
     refreshContent(){
       if(this.userData.userID){
         this.getUser(this.userData.userID)
       }
-      /* prod:  */
     },
     getUser(id){
       axios
@@ -109,6 +101,7 @@ export default {
     },
     logOut(){
       this.$cookies.remove("id")
+      this.$cookies.remove('showAlert_CONFIRM_DELETE')
       this.userData = {}
       this.signedIn = false
     },

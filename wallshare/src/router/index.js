@@ -6,6 +6,7 @@ const Home     = () => { return import('../views/Home.vue')     },
       AddPhoto = () => { return import('../views/AddPhoto.vue') },
       EditUser = () => { return import('../views/EditUser.vue') },
       User     = () => { return import('../views/User.vue')     },
+      Search   = () => { return import('../views/Search.vue')   },
       ViewUser = () => { return import('../views/ViewUser.vue') }
 
 const routes = [
@@ -25,6 +26,12 @@ const routes = [
   {
     path: '/user',
     redirect: "/"
+  },
+  {
+    path: '/search?for=:item',
+    props: true,
+    name: 'search',
+    component: Search,
   },
   {
     path: "/user/:uname",

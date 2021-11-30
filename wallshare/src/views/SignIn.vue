@@ -54,6 +54,7 @@
           
         }
         this.$root.signedIn = true
+        this.$router.back()
       },
       submitFailed(){
         console.log('failed')

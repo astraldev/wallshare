@@ -2,8 +2,8 @@
   <div :class="`tag-input ${noPad ? '' : 'p-1.5 md:p-3'}`">
     <label for="search_inp" v-if="label">{{label}}</label>
     <div :class="`${reverse ? 'flex-col-reverse' : 'flex-col'} ${!label ? 'w-full': ''}`">
-      <div :class="`flex justify-left items-center w-full ${tags.length > 0 ? '' : 'hidden'} p-0 ${float ? 'absolute top-[99%] left-0 bg-white w-full z-50 right-0 border-2 border-blue-400 rounded-md flex-wrap ' : 'relative right-0 overflow-x-auto bg-white border-b-2 border-gray-200'}`">
-        <span v-for="(tag, ind) in tags" :class="`max-h-[0] flex items-center mr-1 ${float ? 'm-0.5' : ''} lower justify-center bg-blue-400 text-white rounded p-1 ${animation[ind]}`" :key="ind">
+      <div :class="`flex justify-left items-center w-full ${tags.length > 0 ? '' : 'hidden'} p-0 ${float ? 'absolute top-[99%] left-0 bg-white w-full md:z-50 right-0 border-2 border-blue-400 rounded-md flex-wrap ' : 'relative right-0 overflow-x-auto bg-white border-b border-gray-100 pb-0.5'}`">
+        <span v-for="(tag, ind) in tags" :class="`max-h-[0] shadow-md flex items-center mr-1 ${float ? 'm-0.5' : ''} lower justify-center bg-blue-400 text-white rounded p-1 ${animation[ind]}`" :key="ind">
           {{tag}}
           <button type="button" class="h-4 w-4 p-0.5 relative ml-1 text-gray-100 hover:text-white" @click="removeTag(ind)">
             <svg version="1.1" viewBox="0 0 16 16" class="fill-current" xmlns="http://www.w3.org/2000/svg">
@@ -15,7 +15,7 @@
           </button>
         </span>
       </div>
-      <input type="search" :ref='ref' id="search_inp" :class="` ${!noPaint ? 'focus:bg-blue-50' : ''} h-9 p-1 flex w-full text-gray-600 flex-shrink-0`" :value="val" :placeholder="placeholder" @keyup="onInput"/>
+      <input type="search" :ref='ref' id="search_inp" :class="`h-9 ${!noPaint ? 'focus:bg-blue-50' : ''} p-1 flex w-full text-gray-600 flex-shrink-0`" :value="val" :placeholder="placeholder" @keydown="onInput"/>
     </div>
     <span>{{error ? error : self_error }}</span>
   </div>
@@ -71,7 +71,10 @@
               return
             }else{
               this.tags.push(value)
-              this.animation.push('tag-view-open')
+              let index = this.animation.push('tag-view-open')
+              setTimeout(()=>{
+                this.animation[index-1] = 'tag-end'
+              }, 310)
               this.val = ''
               this.updateValue()
               this.onMaxReached(true)
@@ -98,6 +101,9 @@
   }
   .tag-view-close{
     animation: height-anim-out 300ms 0s ease backwards;
+  }
+  .tag-end {
+    max-height: 2rem;
   }
   @keyframes height-anim-in{
     from{max-height: 0; opacity: 0;}

@@ -1,6 +1,6 @@
 <template>
   <!-- This is a message template -->
-  <div :class="`fixed w-full flex flex-col-reverse bottom-0 ${show ? 'slide-up' : hide_animation }`">
+  <div :class="`fixed w-full z-50 flex flex-col-reverse bottom-0 ${show ? 'slide-up' : hide_animation }`">
   <div class="items-center w-[fit-content] mx-auto flex mb-0 rounded border bg-white shadow-lg px-2 py-1.5">
     <div class='flex flex-col mx-auto'>
       <span>{{title}}</span>

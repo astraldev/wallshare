@@ -4,7 +4,7 @@
         <form-header title="Register" />
         <text-form-group name='name' class="z-20" label="Name" placeholder="Joe Nick" :validate='v_Name' v-model='name' required />
         <text-form-group name='username' class="z-20" label="Username" :error='userExists' placeholder="e.g joenick" v-model='usrname' :validate='v_Username' required/>
-        <text-form-group name='email' class="z-20" label="Email" :error='emailExists' placeholder="e.g joenick@gmail.com" v-model='email' type="email" required/>
+        <text-form-group name='email' class="z-20" label="Email" :error='emailExists' placeholder="e.g joenick@gmail.com" v-model='email' type="email" :validate='v_Email' required/>
         <text-form-group name='password' class="z-20" label="Password" type="password" placeholder="Password" :validate='v_Pass' v-model='password' required/>
         <check-form-group name='check' class="z-20" label="I agree to all" link_label="terms and conditions" v-model='agreeToTerms' link_to="/" :router="true"  type="checkbox" />
         <empty-form>
@@ -100,7 +100,7 @@ export default {
             }
           })
           .catch(()=>{
-            //this.$root.showToast("An internal error occured")
+            this.$root.showToast("An internal error occured", 'error')
             this.$router.push("/")
           })
         
@@ -174,6 +174,7 @@ export default {
       }else if(!val){
         res.info = ''
       }else{
+        res.sucess = false
         res.info = 'Input a valid email'
       }
       return res

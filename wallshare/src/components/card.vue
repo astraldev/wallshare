@@ -9,7 +9,7 @@
       class="text-white absolute bottom-0 left-0 right-0 p-4 flex flex-col font-light max-h-[35vh] bg-blur backdrop-filter backdrop-blur-md"
     >
       <div
-        class="flex justify-between items-center text-white font-medium py-2 px-1"
+        class="flex justify-between items-center text-white font-medium py-1 px-0.5"
       >
         <router-link :to="getUserLink()"
           >{{ photo.ownerName ? photo.ownerName : "" }}
@@ -37,21 +37,21 @@
             /></svg
         ></span>
       </div>
-      <div class="flex py-1 px-1 flex-wrap w-full">
+      <div class="flex py-1 px-0 flex-wrap w-full">
         <span
           v-for="(tag, index) in photo.tags"
           :key="index"
-          class="py-1 px-2.5 inline-flex items-center justify-center m-1.5 ml-0 border-2 border-blue-600 rounded-full"
+          class="py-1 px-2.5 inline-flex items-center justify-center mr-1.5 ml-0 border-2 border-blue-600 rounded-full"
         >
           <router-link
-            to="/"
+            :to="{ name: 'search', params: {item: tag}}"
             class="text-white text-sm font-medium text-center"
             >{{ tag }}</router-link
           >
         </span>
       </div>
-      <div class="flex justify-between p-2 items-center">
-        <div>{{ countView }} Downloads</div>
+      <div class="flex justify-between p-0.5  items-center">
+        <div>{{ countView == 1 ? `${countView} Download` : `${countView} Downloads`}}</div>
         <div class="flex items-center">
           <button
             class="p-1 bg-white rounded p-1 text-transparent mr-2"
@@ -183,7 +183,7 @@
 import axios from "axios";
 export default {
   props: ["photo", "hover"],
-  emits: ["liked"],
+  emits: ["liked", 'unliked'],
   data() {
     return {
       countView: 0,
@@ -198,13 +198,14 @@ export default {
   },
   mounted() {
     this.ifLiked();
-    setInterval(this.ifLiked, 2000);
+    setInterval(this.ifLiked, 5000);
     this.observer = new IntersectionObserver((entries) => {
       entries.forEach((el) => {
         this.fadeInAnimation(el.target, el.isIntersecting);
       });
     });
     this.observer.observe(this.$el);
+    this.countView = this.photo.downloads
   },
   beforeUnmount() {
     if (this.observer) {
@@ -228,7 +229,8 @@ export default {
     },
     ifLiked() {
       if (this.$root.signedIn) {
-        axios
+        if(this.$root.userData.likes > 0){
+          axios
           .get(
             `${this.$root.serverHost}/api/users/likes?id=${this.photo._id}&user=${this.$root.userData.userID}`
           )
@@ -239,6 +241,7 @@ export default {
           .catch(() => {
             this.likedPhoto = false;
           });
+        }
       }
     },
 
@@ -257,7 +260,6 @@ export default {
       if (!this.$root.signedIn) this.$router.push("/sign-in");
       else {
         this.liked();
-        this.$emit("liked");
       }
     },
     liked() {
@@ -268,24 +270,20 @@ export default {
             photo: this.photo._id,
             user: this.$root.userData.userID,
           })
-          .then(() => {
-            this.$root.refreshContent();
+          .then(()  => {
+            this.$emit("liked");
           })
-          .catch(() => {
-            this.likedPhoto = false;
-          });
+          .catch(() => {});
       } else {
         axios
           .put(`${this.$root.serverHost}/api/users/unlikePhoto`, {
             photo: this.photo._id,
             user: this.$root.userData.userID,
           })
-          .then(() => {
-            this.$root.refreshContent();
+          .then(()  => {
+            this.$emit("unliked");
           })
-          .catch(() => {
-            console.log("Couldn't unlike photo");
-          });
+          .catch(() => {});
       }
     },
     download() {
@@ -306,11 +304,21 @@ export default {
         });
     },
     download_cb() {
+      if(!this.downloaded){
+        setTimeout(() => {
+          this.downloadAnimation = false;
+        }, 1000);
+        this.download();
+        axios
+          .put(`${this.$root.serverHost}/api/photos/downloaded?id=${this.photo._id}`)
+          .then((res)=>{
+            if(res.data.sucess){
+              this.countView++
+            }
+          })
+          .catch((e)=>{console.log(e)})  
+      }
       this.downloaded = true;
-      setTimeout(() => {
-        this.downloadAnimation = false;
-      }, 1000);
-      this.download();
     },
     fadeInAnimation(el, isIntersecting) {
       if (isIntersecting) {

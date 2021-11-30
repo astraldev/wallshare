@@ -17,6 +17,7 @@
           </router-link>
           <div v-if='userData.photos && photo_links[0]' class="font-bold">Last updated: <span class="text-sm font-normal"> {{simplifyDate(photo_links[0].created)}} </span></div>
           <div class="font-bold">Photos: <span class="text-sm font-normal"> {{userData.photos}}</span> </div>
+          <div class="font-bold">Impact: <span class="text-sm font-normal"> {{userData.totalDownloads || '0'}} persons</span> </div>
         </div>
       </div>
       <div class="flex items-center justify-between space-x-2">
@@ -29,7 +30,7 @@
     <user-photo-container :link="getAddPhotoLink()" class="lg:col-start-1 lg:col-end-4">
       <user-photo-card v-for='(photo, index) in photo_links' :photo='photo' @delete='confirmDeletePhoto(photo._id)' :key='index'/>
       <template #liked>
-        <card v-for="(photo, index) in liked_photos" :photo='photo' :hover='false' :key="index" @liked="refreshContent"/>
+        <card v-for="(photo, index) in liked_photos" :photo='photo' :hover='false' :key="index" @liked="refreshContent" @unliked="refreshContent" />
       </template>
     </user-photo-container>
 
@@ -89,8 +90,8 @@ export default {
       if(!this.userData.userID){
         this.$router.push("/")
       }
-      setTimeout(this.refreshContent, 200)
-      setInterval(this.refreshContent, 1000)
+      this.refreshContent()
+      setInterval(this.refreshContent, 5000)
     },
     methods: {
       getUserIcon(){},
@@ -130,8 +131,11 @@ export default {
               }
             }
           })
-          .catch((err)=>{console.log("Issues with photo", err)})
-        axios
+          .catch(()=>{
+            this.$root.showAlert("Having trouble connecting to the server :(", 'error')
+          })
+        if(this.userData.likes > 0){
+          axios
           .get(`${this.$root.serverHost}/api/users/likes?user=${this.userData.userID}`)
           .then(data=>{
             if(data.data){
@@ -147,6 +151,7 @@ export default {
               }
             })
           .catch(()=>{console.log("Issues with photo")})
+        }
 
       },
       refreshContent(){
@@ -200,7 +205,6 @@ export default {
           }
           this.alertData.declineCallback = ()=>{
             this.alertData.show = false
-            this.$router.push("/")
           }
           this.alertData.show = true
 

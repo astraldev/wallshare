@@ -1,7 +1,7 @@
 <template>
   <div class="py-2 md:p-0 px-0 flex md:grid grid-cols-2 divide-x-2 lg:grid-cols-3 divide-gray-200 h-full flex-col md:max-h-screen-[90vh] overflow-y-auto">
     <!-- User data -->
-    <div class="p-1 border-b-2 md:border-0 lg:col-end-1">
+    <div class="p-1 md:border-0 lg:col-end-1">
       <div class="pb-3 pl-2 flex">
         <div class="h-32 w-32 rounded-full mx-auto self-center border-2 flex items-center justify-center">
           <img alt='img' class="object-cover">
@@ -15,8 +15,8 @@
           <div class="font-bold">Impact: <span class="text-sm font-normal"> {{user.totalDownloads || '0'}} persons</span> </div>
         </div>
       </div>
-      <div class="flex items-center justify-between space-x-2">
-        <button @click="followUser" :class="`px-2 py-1.5 w-11/12 text-white m-auto h-9 rounded-md text-center ${getFollowed() ? 'bg-gray-400' : 'hover:ring-2 hover:ring-blue-100 bg-blue-400'}`">{{`${getFollowed() ? 'Unfollow' : 'Follow'}`}}</button>
+      <div class="flex items-center border-b-2 pb-1 justify-between space-x-2">
+        <button @click="followUser" :class="`px-2 py-1.5 w-11/12 text-white m-auto h-9 rounded-md text-center ${isFollowing ? 'bg-red-400 hover:ring-2 hover:ring-red-200 ' : 'hover:ring-2 hover:ring-blue-100 bg-blue-400'}`">{{`${isFollowing ? 'Unfollow' : 'Follow'}`}}</button>
         <button @click="notification" class="hover:ring-2 hover:ring-gray-200 p-0.5 w-1/6 text-white m-auto flex justify-center items-center bg-gray-400 rounded-md">
           <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 611.999 611.999" style="enable-background:new 0 0 611.999 611.999;" xml:space="preserve" class="fill-current w-8 h-8">
               <g>
@@ -54,12 +54,16 @@ export default {
   data(){
     return {
       user: {},
-      photos: {}
+      photos: {},
+      isFollowing: false
     }
   },
   mounted(){
     /** Connect to the server and get user info */
+    this.getFollowed()
     this.refreshContent()
+    setInterval(this.refreshContent, 5000)
+    setInterval(this.getFollowed, 1000)
   },
   methods: {
     refreshContent(){
@@ -73,6 +77,19 @@ export default {
           this.user = res.data 
           this.populatePhotos()
         }
+        if(this.$root.signedIn){
+          axios
+            .get(`${this.$root.serverHost}/api/users/following?who=${this.user.userID}&id=${this.$root.userData.userID}`)
+            .then(res=>{
+              if(res.data){
+                if(res.data.sucess){
+                  this.isFollowing = true
+                }
+              }else{
+                console.log(res.data)
+              }
+            })
+        }
       })
     },
     getLastUpload(){
@@ -82,7 +99,18 @@ export default {
         return this.simplifyDate(this.photos[0].created)
       }
     },
-    getFollowed(){},
+    async getFollowed(){
+      if(this.$root.signedIn){
+        let result = await axios.get(`${this.$root.serverHost}/api/users/following?who=${this.user.userID}&id=${this.$root.userData.userID}`)
+        if(result.data.sucess){
+          this.isFollowing = true
+        }else{
+          this.isFollowing = false
+        }
+      }else{
+        this.isFollowing = false
+      }
+    },
     simplifyDate(dateString){
       return dateString.replace("GMT", "").replace(/(\w+,)/, "")
     },
@@ -104,6 +132,33 @@ export default {
             }
           })
           .catch((err)=>{console.log("Issues with photo", err)})
+    },
+    followUser(){
+      if(!this.isFollowing){
+        axios
+          .put(`${this.$root.serverHost}/api/users/following?who=${this.user.userID}&id=${this.$root.userData.userID}`)
+          .then((res)=>{
+            if(res.data.sucess){
+              this.isFollowing = true
+              this.refreshContent()
+            }
+          })
+          .catch((err)=>{
+            console.log(err)
+          })
+      }else{
+        axios
+          .put(`${this.$root.serverHost}/api/users/unfollow?who=${this.user.userID}&id=${this.$root.userData.userID}`)
+          .then((res)=>{
+            if(res.data.sucess){
+              this.isFollowing = false
+              this.refreshContent()
+            }
+          })
+          .catch((err)=>{
+            console.log(err)
+          })
+      }
     }
   },
 }
